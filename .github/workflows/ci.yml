@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repositório
+      uses: actions/checkout@v4
+
+    - name: Configurar .NET 8.x
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Restaurar e compilar solução
+      run: dotnet build PlaywrightMasterToolkit.sln --configuration Release
+
+    - name: Instalar navegadores do Playwright
+      run: pwsh tests/PlaywrightMasterToolkit.Tests/bin/Release/net8.0/playwright.ps1 install --with-deps chromium
+
+    - name: Executar testes de automação
+      run: dotnet test PlaywrightMasterToolkit.sln --configuration Release --no-build --verbosity normal
+
+    - name: Upload de artefatos de diagnóstico (screenshots e traces)
+      uses: actions/upload-artifact@v4
+      if: failure()
+      with:
+        name: playwright-test-artifacts
+        path: |
+          traces/
+          screenshots/
+        if-no-files-found: ignore
