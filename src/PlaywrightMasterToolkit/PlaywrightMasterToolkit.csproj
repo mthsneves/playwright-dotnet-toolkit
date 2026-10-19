@@ -9,7 +9,7 @@
     <Authors>Matheus Neves</Authors>
     <Description>Toolkit reutilizável de automação de testes com Playwright para .NET (C#) e NUnit, incluindo helpers de UI, resiliência, gerador de dados e helper de API.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <RepositoryUrl>https://github.com/matheusneves/playwright-dotnet-master-toolkit</RepositoryUrl>
+    <RepositoryUrl>https://github.com/mthsneves/playwright-dotnet-toolkit</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>playwright;dotnet;csharp;nunit;testing;automation;e2e</PackageTags>
   </PropertyGroup>

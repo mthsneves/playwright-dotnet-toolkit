@@ -1,60 +1,135 @@
-# Playwright .NET Master Toolkit
+# 🎭 Playwright .NET Master Toolkit
 
-[![CI](https://github.com/matheusneves/playwright-dotnet-master-toolkit/actions/workflows/ci.yml/badge.svg)](https://github.com/matheusneves/playwright-dotnet-master-toolkit/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-![.NET 8.0](https://img.shields.io/badge/.NET-8.0-purple.svg)
-![Playwright](https://img.shields.io/badge/Playwright-1.63.0-green.svg)
-![NUnit](https://img.shields.io/badge/NUnit-3.14-red.svg)
+<p align="center">
+  <a href="https://github.com/mthsneves/playwright-dotnet-toolkit/actions/workflows/ci.yml">
+    <img src="https://github.com/mthsneves/playwright-dotnet-toolkit/actions/workflows/ci.yml/badge.svg" alt="CI Status" />
+  </a>
+  <a href="LICENSE">
+    <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT" />
+  </a>
+  <img src="https://img.shields.io/badge/.NET-8.0-purple.svg" alt=".NET 8.0" />
+  <img src="https://img.shields.io/badge/Playwright-1.63.0-green.svg" alt="Playwright" />
+  <img src="https://img.shields.io/badge/NUnit-3.14-red.svg" alt="NUnit" />
+  <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome" />
+</p>
 
-**Playwright .NET Master Toolkit** é um framework e biblioteca de testes reutilizável desenvolvida em **C# (.NET 8)** com **Playwright** e **NUnit**. Ele fornece abstrações ergonômicas e resilientes para automação de testes de ponta a ponta (E2E), testes híbridos com injeção direta de dados via API (API Seeding), gerador dinâmico de massas de dados brasileiras (CPF, CNPJ, Telefone, E-mail com validação matemática) e controle robusto de sessão e falhas com captura automática de traces e screenshots.
+<p align="center">
+  <strong>Framework reutilizável e resiliente para automação de testes de ponta a ponta (E2E) e testes híbridos em C# (.NET 8) com Playwright e NUnit.</strong>
+</p>
 
 ---
 
-## 📋 Sumário
-- [Visão Geral e Arquitetura](#-visão-geral-e-arquitetura)
+## 📑 Sumário
+
+- [Visão Geral](#-visão-geral)
+- [Arquitetura da Solução](#-arquitetura-da-solução)
+- [Destaques e Recursos](#-destaques-e-recursos)
 - [Pré-requisitos](#-pré-requisitos)
-- [Estrutura do Projeto](#-estrutura-do-projeto)
-- [Configuração de Ambientes](#-configuração-de-ambientes)
-- [Instalação e Execução](#-instalação-e-execução)
-- [Tabela Completa de Métodos](#-tabela-completa-de-métodos)
+- [Estrutura do Repositório](#-estrutura-do-repositório)
+- [Início Rápido (Quick Start)](#-início-rápido-quick-start)
+- [Configuração Multi-Ambiente](#-configuração-multi-ambiente)
+- [Execução dos Testes](#-execução-dos-testes)
+- [Referência Completa da API](#-referência-completa-da-api)
+  - [DataGenerator](#1-datagenerator-utilitário-estático)
+  - [UiHelper](#2-uihelper-resiliência-de-interface)
+  - [AuthHelper](#3-authhelper-autenticação-e-sessão)
+  - [ApiHelper](#4-apihelper-cliente-http-e-data-seeding)
+  - [BaseTest](#5-basetest-classe-base-para-testes)
+  - [TestConfig](#6-testconfig-gerenciamento-de-configurações)
+- [Exemplos de Testes E2E e Híbridos](#-exemplos-de-testes-e2e-e-híbridos)
 - [Diferenças em Relação ao TypeScript](#-diferenças-em-relação-ao-typescript)
 - [Boas Práticas de Automação](#-boas-práticas-de-automação)
-- [Diagnóstico e Visualização de Traces](#-diagnóstico-e-visualização-de-traces)
-- [Como Utilizar em Outros Projetos](#-como-utilizar-em-outros-projetos)
+- [Diagnóstico com Traces e Screenshots](#-diagnóstico-com-traces-e-screenshots)
+- [Integração Contínua (CI/CD)](#-integração-contínua-cicd)
+- [Como Reutilizar em Seu Projeto](#-como-reutilizar-em-seu-projeto)
+- [Licença](#-licença)
 
 ---
 
-## 🏛️ Visão Geral e Arquitetura
+## 💡 Visão Geral
 
-O toolkit foi arquitetado para resolver dores clássicas de automação E2E:
-1. **Flakiness e Actionability**: Remoção de esperas fixas manuais e respeito às checagens nativas de acionabilidade do Playwright.
-2. **Multi-ambiente Desacoplado**: Carregamento transparente de arquivos `.env.<ambiente>` via `DotNetEnv` com busca recursiva da pasta `config/`.
-3. **Massa de Testes sem Colisão**: Gerador com validação de dígitos reais de documentos brasileiros e hashes únicos.
-4. **Testes Híbridos Ultrarrápidos**: Criação e preparação de estado prévio via API direta, navegando na UI apenas para o que importa.
-5. **Observabilidade Total**: Em caso de falha de teste, o toolkit salva automaticamente a captura de tela (.png) e o arquivo de tracing completo (.zip) anexados ao relatório do NUnit.
+O **Playwright .NET Master Toolkit** foi projetado para elevar o nível de maturidade e confiabilidade de projetos de automação em ecossistemas corporativos .NET. Ele resolve os principais desafios encontrados em testes E2E modernos:
 
----
-
-## ⚙️ Pré-requisitos
-
-- [.NET SDK 8.0](https://dotnet.microsoft.com/download/dotnet/8.0) ou superior (`dotnet --version >= 8.0`).
-- [PowerShell 7 (`pwsh`)](https://github.com/PowerShell/PowerShell) (necessário para rodar o script de instalação dos navegadores do Playwright).
-- Git (`git --version`).
+- 🛡️ **Zero Esperas Cegas (`Thread.Sleep`)**: Respeita rigorosamente os mecanismos nativos de acionabilidade do Playwright (estabilidade, visibilidade, interceptação e habilitação).
+- 🧩 **Testes Híbridos Ultrarrápidos (Data Seeding)**: Injeta dados no banco/serviço via API direta antes de abrir a UI, reduzindo o tempo de suítes de minutos para milissegundos.
+- 🇧🇷 **Massa de Dados Realista para o Brasil**: Geração determinística de CPFs e CNPJs válidos (com cálculo real de dígitos verificadores mod 11), telefones celulares e e-mails com garantia de não colisão.
+- 🔐 **Autenticação Resiliente**: Fluxo completo de login com tratamento de modais de sessões ativas concorrentes e suporte nativo a rotas SPA com hash (`/#/login`).
+- 📊 **Diagnóstico Automático de Falhas**: Gravação de tracing interativo (.zip) e screenshots de tela cheia (.png) anexados automaticamente ao relatório do NUnit quando um teste falha.
 
 ---
 
-## 📁 Estrutura do Projeto
+## 📐 Arquitetura da Solução
+
+```mermaid
+graph TD
+    subgraph TestProject ["PlaywrightMasterToolkit.Tests (NUnit)"]
+        A[Smoke Tests / Feature Tests] --> B["BaseTest (PageTest)"]
+    end
+
+    subgraph ToolkitLibrary ["PlaywrightMasterToolkit (Class Library)"]
+        B --> C[UiHelper]
+        B --> D[AuthHelper]
+        B --> E["ApiHelper (Lazy)"]
+        
+        C --> F[DataGenerator]
+        D --> G[TestConfig]
+        E --> G
+        B --> G
+        
+        C --> H["Models (UiOptions, LoginOptions, SearchField, ReloadOptions, DownloadResult)"]
+    end
+
+    subgraph External ["Ambiente de Execução"]
+        G -.-> I["config/.env.<TEST_ENV> (DotNetEnv)"]
+        C -.-> J["Navegador Chromium / Web (Playwright)"]
+        E -.-> K["Serviços REST / APIs"]
+    end
+```
+
+---
+
+## ✨ Destaques e Recursos
+
+| Módulo | Objetivo Principal | Benefício |
+|---|---|---|
+| **`BaseTest`** | Classe base que herda de `PageTest` | Injeta `Ui`, `Auth` e `Api`, além de capturar traces e screenshots em falhas. |
+| **`UiHelper`** | Ergonomia e resiliência em interações | Resolve autocompletes, downloads, digitação sequencial e recarregamento resiliente. |
+| **`AuthHelper`** | Gestão de sessão corporativa | Trata conexões concorrentes, limpa cookies/storage e aguarda desvio de rotas de login. |
+| **`ApiHelper`** | Injeção e consumo de APIs | Autenticação via API, extração de token JWT e `SeedRecordViaApiAsync<T>` genérico. |
+| **`DataGenerator`** | Criação de dados para testes | Gera e valida CPFs, CNPJs, celulares e normaliza textos acentuados. |
+| **`TestConfig`** | Multi-ambiente simplificado | Carrega `.env` subindo os diretórios até encontrar `config/`, sem travar caso ausente. |
+
+---
+
+## 🛠️ Pré-requisitos
+
+1. [.NET SDK 8.0](https://dotnet.microsoft.com/download/dotnet/8.0) ou superior:
+   ```bash
+   dotnet --version
+   ```
+2. [PowerShell 7 (`pwsh`)](https://github.com/PowerShell/PowerShell):
+   ```bash
+   pwsh --version
+   ```
+3. [Git](https://git-scm.com/):
+   ```bash
+   git --version
+   ```
+
+---
+
+## 📂 Estrutura do Repositório
 
 ```text
-PlaywrightMasterToolkit/
+playwright-dotnet-toolkit/
 ├── .github/
 │   └── workflows/
-│       └── ci.yml                 # Pipeline CI no GitHub Actions
+│       └── ci.yml                 # Pipeline CI/CD GitHub Actions
 ├── config/
-│   ├── .env.example               # Exemplo versionado de configuração de variáveis
-│   └── .env.qa                    # Arquivo local de QA (ignorado pelo git)
+│   ├── .env.example               # Template de variáveis versionado
+│   └── .env.qa                    # Variáveis locais de QA (ignorado no git)
 ├── docs/
-│   └── EXEMPLOS.md                # Exemplos práticos detalhados em C#
+│   └── EXEMPLOS.md                # Exemplos práticos portados e detalhados
 ├── downloads/
 │   └── .gitkeep                   # Diretório de persistência de downloads
 ├── src/PlaywrightMasterToolkit/
@@ -67,246 +142,310 @@ PlaywrightMasterToolkit/
 │   │   ├── AuthHelper.cs          # Login resiliente e controle de sessão
 │   │   └── UiHelper.cs            # Resiliência e ergonomia de UI
 │   ├── Models/
-│   │   ├── DownloadResult.cs      # Modelo de retorno de downloads interceptados
-│   │   ├── LoginOptions.cs        # Opções de seletores e timeouts de login
+│   │   ├── DownloadResult.cs      # Modelo de retorno de downloads
+│   │   ├── LoginOptions.cs        # Opções de seletores e rotas de login
 │   │   ├── ReloadOptions.cs       # Opções para recarregamento resiliente
 │   │   ├── SearchField.cs         # Modelo para formulários de busca
 │   │   ├── UiAction.cs            # Enum de ações suportadas
 │   │   └── UiOptions.cs           # Opções de interação (Timeout, Force, Sequentially, etc.)
-│   └── Utils/
-│       └── DataGenerator.cs       # Gerador e validador de massas de dados
+│   ├── Utils/
+│   │   └── DataGenerator.cs       # Gerador e validador de massas de dados
+│   └── PlaywrightMasterToolkit.csproj
 ├── tests/PlaywrightMasterToolkit.Tests/
-│   ├── .runsettings               # Configurações do runner (Playwright Headless/Headed, TEST_ENV)
+│   ├── .runsettings               # Configurações do runner Playwright/NUnit
 │   ├── Smoke/
 │   │   ├── DataGeneratorTests.cs  # Testes de unidade do gerador de dados
 │   │   ├── FixturesTests.cs       # Testes de injeção da base e mock de API
-│   │   └── UiHelperTests.cs       # Testes E2E contra TodoMVC e componentes de interface
-│   └── Usings.cs                  # Global usings e configuração de paralelismo NUnit
-├── CHANGELOG.md                   # Histórico de alterações e mudanças de comportamento
+│   │   └── UiHelperTests.cs       # Testes E2E contra TodoMVC e componentes dinâmicos
+│   ├── Usings.cs                  # Global Usings e paralelismo NUnit
+│   └── PlaywrightMasterToolkit.Tests.csproj
+├── CHANGELOG.md                   # Histórico de alterações e migrações
 ├── LICENSE                        # Licença MIT
-└── README.md                      # Documentação completa
+├── PlaywrightMasterToolkit.sln    # Solução .NET
+└── README.md                      # Documentação oficial
 ```
 
 ---
 
-## 🔧 Configuração de Ambientes
+## ⚡ Início Rápido (Quick Start)
 
-O toolkit suporta múltiplos ambientes controlados pela variável de ambiente `TEST_ENV` (padrão: `qa`).
+### 1. Clonar o repositório
+```bash
+git clone https://github.com/mthsneves/playwright-dotnet-toolkit.git
+cd playwright-dotnet-toolkit
+```
 
-1. Copie o arquivo modelo:
-   ```bash
-   cp config/.env.example config/.env.qa
-   ```
-2. Configure os parâmetros desejados em `config/.env.qa`:
-   ```properties
-   BASE_URL=https://demo.playwright.dev/todomvc
-   API_BASE_URL=https://api.exemplo.com
-   USER_EMAIL=usuario.qa@empresa.com
-   USER_PASSWORD=SenhaForte@123
-   ```
-> [!NOTE]
-> O arquivo `config/.env.example` é versionado. Todos os arquivos `config/.env.*` reais contendo credenciais são estritamente ignorados pelo `.gitignore`.
-
----
-
-## 🚀 Instalação e Execução
-
-### 1. Restaurar dependências e compilar a solução
+### 2. Restaurar dependências e compilar
 ```bash
 dotnet build
 ```
 
-### 2. Instalar os navegadores do Playwright
-Execute o script gerado na compilação:
+### 3. Instalar o navegador Chromium
 ```powershell
 pwsh tests/PlaywrightMasterToolkit.Tests/bin/Debug/net8.0/playwright.ps1 install chromium
 ```
-*(No Linux, para instalar dependências do sistema operacional: `install --with-deps chromium`)*
+*(No Linux, se faltarem dependências de SO: `install --with-deps chromium`)*
 
-### 3. Execução dos Testes
-- **Execução padrão (modo headless com ambiente padrão qa)**:
-  ```bash
-  dotnet test
-  ```
-- **Execução especificando outro ambiente**:
-  - No Linux/macOS:
-    ```bash
-    TEST_ENV=staging dotnet test
-    ```
-  - No PowerShell:
-    ```powershell
-    $env:TEST_ENV="staging"; dotnet test
-    ```
-- **Execução em modo visual (Headed)**:
-  ```powershell
-  $env:HEADED="1"; dotnet test
-  ```
-- **Executando apenas a suíte de Smoke**:
-  ```bash
-  dotnet test --filter "FullyQualifiedName~Smoke"
-  ```
+### 4. Executar os testes
+```bash
+dotnet test
+```
 
 ---
 
-## 📖 Tabela Completa de Métodos
+## 🌍 Configuração Multi-Ambiente
 
-### `DataGenerator` (Classe Estática)
-| Assinatura | Descrição | Exemplo de Uso |
-|---|---|---|
-| `string UniqueHash(int length = 8)` | Gera cadeia alfanumérica pseudoaleatória única. | `DataGenerator.UniqueHash(6)` |
-| `string Name(string prefix = "Cliente")` | Gera um nome com prefixo e hash único. | `DataGenerator.Name("Fornecedor")` |
-| `string Email(string? prefix = null, string domain = "empresa.com")` | Gera e-mail único normalizado. | `DataGenerator.Email("qa", "teste.com")` |
-| `string Cellphone(bool mask = false)` | Gera número de celular brasileiro válido (com ou sem máscara). | `DataGenerator.Cellphone(mask: true)` |
-| `string Cpf(bool mask = false)` | Gera CPF matematicamente válido com dígitos verificadores. | `DataGenerator.Cpf(mask: true)` |
-| `bool IsValidCpf(string? cpf)` | Valida autenticidade matemática de um CPF (com ou sem máscara). | `DataGenerator.IsValidCpf("123.456.789-09")` |
-| `string Cnpj(bool mask = false)` | Gera CNPJ matematicamente válido (padrão matriz 0001). | `DataGenerator.Cnpj(mask: true)` |
-| `bool IsValidCnpj(string? cnpj)` | Valida autenticidade matemática de um CNPJ (com ou sem máscara). | `DataGenerator.IsValidCnpj(cnpj)` |
-| `string NormalizeText(string? input)` | Remove acentuação, converte para minúsculas e colapsa espaços. | `DataGenerator.NormalizeText(" Ação ")` |
+O toolkit carrega automaticamente o arquivo `.env.<TEST_ENV>` a partir da pasta `config/` baseado na variável de ambiente `TEST_ENV` (padrão: `qa`).
 
-### `UiHelper`
-| Assinatura | Descrição | Exemplo de Uso |
-|---|---|---|
-| `Task WaitForPageLoadAsync(bool waitForNetworkIdle = false)` | Aguarda carregamento completo da página (DOMContentLoaded e Load). | `await Ui.WaitForPageLoadAsync()` |
-| `Task InteractWithElementAsync(string selector, UiAction action, UiOptions? options = null)` | Executa ação em elemento por seletor (Click, Type, Clear, MouseOver, ContainsClick, etc). | `await Ui.InteractWithElementAsync("#btn", UiAction.Click)` |
-| `Task InteractWithElementAsync(ILocator locator, UiAction action, UiOptions? options = null)` | Executa ação em instância de `ILocator`. | `await Ui.InteractWithElementAsync(loc, UiAction.Clear)` |
-| `Task ClickWhenVisibleAndEnabledAsync(string selector, UiOptions? options = null)` | Aguarda que o elemento esteja visível e habilitado antes do clique. | `await Ui.ClickWhenVisibleAndEnabledAsync("#salvar")` |
-| `Task ClickWhenVisibleAndEnabledAsync(ILocator locator, UiOptions? options = null)` | Sobrecarga de clique resiliente para `ILocator`. | `await Ui.ClickWhenVisibleAndEnabledAsync(myLoc)` |
-| `Task SelectAutocompleteAsync(string selector, string value, UiOptions? options = null)` | Seleciona opção em autocomplete, opcionalmente digitando sequencialmente. | `await Ui.SelectAutocompleteAsync("#cidade", "SP", new() { Type = true })` |
-| `Task SelectAutocompleteAsync(string selector, string value, bool type, UiOptions? options = null)` | Sobrecarga ergonômica com parâmetro direto `type`. | `await Ui.SelectAutocompleteAsync("#cidade", "SP", type: true)` |
-| `Task SelectOptionWithTextAsync(string selector, string text, float timeout = 30000)` | Abre dropdown, clica na opção com texto e fecha com Escape. | `await Ui.SelectOptionWithTextAsync("#combo", "Ativo")` |
-| `Task ClickUntilVisibleAsync(string clickSelector, string targetSelector, float timeout = 30000, int intervalMs = 500)` | Clica repetidamente no gatilho até o elemento alvo ficar visível. | `await Ui.ClickUntilVisibleAsync(".chk", "#btn-prosseguir")` |
-| `Task ValidateTextInElementAsync(string selector, IEnumerable<string> texts, float timeout = 30000)` | Valida que o seletor contém todos os textos da coleção com asserções nativas. | `await Ui.ValidateTextInElementAsync(".card", [id, "R$ 10"])` |
-| `Task ValidateTextInElementAsync(ILocator locator, IEnumerable<string> texts, float timeout = 30000)` | Valida coleção de textos em um `ILocator`. | `await Ui.ValidateTextInElementAsync(cardLoc, textos)` |
-| `Task SearchFormAsync(IEnumerable<SearchField> fields, string? submitButtonSelector = null, float timeout = 30000)` | Preenche sequencialmente campos de busca e aciona botão de envio. | `await Ui.SearchFormAsync(campos, "#btn-buscar")` |
-| `Task ReloadUntilVisibleAsync(string selector, string expectedText, ReloadOptions? options = null)` | Recarrega a página em loop até que o texto normalizado seja encontrado. | `await Ui.ReloadUntilVisibleAsync("#status", "Concluído")` |
-| `Task<string> ValidateDownloadAsync(Func<Task> trigger)` | Intercepta download nativo e retorna o nome sugerido do arquivo. | `string name = await Ui.ValidateDownloadAsync(btn.ClickAsync)` |
-| `Task<DownloadResult> ValidateDownloadDetailedAsync(Func<Task> trigger, string? saveTo = null)` | Intercepta download e persiste opcionalmente na pasta `downloads/`. | `var dl = await Ui.ValidateDownloadDetailedAsync(action, "doc.pdf")` |
-| `Task<string> FillGeneratedNameAsync(string selector, string prefix = "Cliente", UiOptions? options = null)` | Gera nome único, preenche o campo e retorna o valor preenchido. | `string nome = await Ui.FillGeneratedNameAsync("#nome")` |
-| `Task<string> FillGeneratedCpfAsync(string selector, bool mask = false, UiOptions? options = null)` | Gera CPF válido, preenche o campo e retorna o valor. | `string cpf = await Ui.FillGeneratedCpfAsync("#cpf", mask: true)` |
-| `Task<string> FillGeneratedCnpjAsync(string selector, bool mask = false, UiOptions? options = null)` | Gera CNPJ válido, preenche o campo e retorna o valor. | `string cnpj = await Ui.FillGeneratedCnpjAsync("#cnpj", true)` |
-| `Task<string> FillGeneratedEmailAsync(string selector, string domain = "empresa.com", UiOptions? options = null)` | Gera e-mail único, preenche o campo e retorna o valor. | `string email = await Ui.FillGeneratedEmailAsync("#email")` |
-| `Task<string> FillGeneratedPhoneAsync(string selector, bool mask = false, UiOptions? options = null)` | Gera telefone celular brasileiro, preenche o campo e retorna o valor. | `string tel = await Ui.FillGeneratedPhoneAsync("#tel", true)` |
+Crie seu arquivo local a partir do modelo:
+```bash
+cp config/.env.example config/.env.qa
+```
 
-### `AuthHelper`
-| Assinatura | Descrição | Exemplo de Uso |
-|---|---|---|
-| `Task LoginPlatformAsync(string? email = null, string? password = null, LoginOptions? options = null)` | Fluxo completo de login resiliente (limpa cookies/storage, trata hash routing e sessão concorrente). | `await Auth.LoginPlatformAsync()` |
-| `Task LogoutAsync(string userMenuSelector = "#user-menu", string logoutButtonSelector = "#btn-logout")` | Aciona o menu do usuário, aguarda botão de saída e limpa armazenamento e cookies. | `await Auth.LogoutAsync()` |
+Edite `config/.env.qa`:
+```properties
+BASE_URL=https://demo.playwright.dev/todomvc
+API_BASE_URL=https://api.exemplo.com
+USER_EMAIL=usuario.qa@empresa.com
+USER_PASSWORD=SenhaForte@123
+```
 
-### `ApiHelper`
-| Assinatura | Descrição | Exemplo de Uso |
-|---|---|---|
-| `Task<string> LoginViaApiAsync(string user, string pass, string loginEndpoint = "/api/v1/auth/login")` | Efetua login HTTP direto e extrai o token JWT da resposta. | `string token = await Api.LoginViaApiAsync("admin", "123")` |
-| `Task<T> SeedRecordViaApiAsync<T>(string endpoint, object payload, string? token = null)` | Cria registro via API (POST) com desserialização genérica do retorno. | `var user = await Api.SeedRecordViaApiAsync<UserDto>("/users", payload)` |
-| `Task<string> SeedRecordViaApiAsync(string endpoint, object payload, string? token = null)` | Cria registro via API retornando o corpo textual da resposta. | `string json = await Api.SeedRecordViaApiAsync("/pedidos", payload)` |
-| `static string CombineUrl(string baseUrl, string endpoint)` | Concatena URLs com segurança sem duplicar ou omitir barras. | `ApiHelper.CombineUrl("http://api", "/v1")` |
+> [!IMPORTANT]
+> O arquivo `config/.env.example` é versionado no Git como referência. Arquivos de ambiente reais contendo senhas e chaves (`config/.env.*`) são ignorados pelo `.gitignore`.
 
-### `TestConfig` (Classe Estática)
-| Propriedade / Método | Descrição |
+---
+
+## 🏃 Execução dos Testes
+
+| Cenário de Execução | Comando |
 |---|---|
-| `string BaseUrl` | URL base da aplicação (fallback: `https://demo.playwright.dev/todomvc`). |
-| `string ApiBaseUrl` | URL base da API configurada no ambiente. |
-| `string UserEmail` | E-mail do usuário configurado. |
-| `string UserPassword` | Senha do usuário configurada. |
-| `string TestEnv` | Nome do ambiente atual (padrão: `qa`). |
-| `bool IgnoreHttpsErrors` | Indica se deve ignorar erros de certificado HTTPS (padrão: `true`). |
-| `string GetRequired(string name)` | Obtém variável obrigatória ou lança exceção detalhada caso ausente. |
-
-### `BaseTest : PageTest`
-| Membro | Descrição |
-|---|---|
-| `UiHelper Ui` | Instância gerenciada do `UiHelper` para a página atual do teste. |
-| `AuthHelper Auth` | Instância gerenciada do `AuthHelper` para autenticação. |
-| `ApiHelper Api` | Instância lazy do `ApiHelper` (exige `API_BASE_URL` apenas quando acessada). |
-| `BrowserNewContextOptions ContextOptions()` | Override que configura Viewport 1366x768, Downloads habilitados e BaseURL. |
-| `[SetUp] BaseSetUpAsync()` | Configura timeouts (20s/30s/15s), instancia helpers e inicia o tracing. |
-| `[TearDown] BaseTearDownAsync()` | Salva screenshot em `screenshots/` e trace em `traces/<teste>.zip` se falhar. |
+| **Execução Padrão (Headless)** | `dotnet test` |
+| **Especificando Ambiente (Linux/Mac)** | `TEST_ENV=staging dotnet test` |
+| **Especificando Ambiente (PowerShell)** | `$env:TEST_ENV="staging"; dotnet test` |
+| **Modo Visual (Headed)** | `$env:HEADED="1"; dotnet test` |
+| **Filtrando por Categoria/Nome** | `dotnet test --filter "FullyQualifiedName~Smoke"` |
+| **Com relatório detalhado no console** | `dotnet test --verbosity normal` |
 
 ---
 
-## 🔄 Diferenças em Relação ao TypeScript
+## 📚 Referência Completa da API
 
-Ao portar o toolkit de TypeScript para C#, algumas adaptações foram necessárias para aderir aos padrões idiomáticos da plataforma .NET:
+### 1. `DataGenerator` (Utilitário Estático)
 
-1. **Herança em vez de `test.extend` (Fixtures)**:
-   - *TypeScript*: Utilizava `baseTest.extend<CustomFixtures>({ ui, auth, api })`.
-   - *C#*: O Playwright para .NET baseia-se em herança via `PageTest`. O `BaseTest` herda de `PageTest` e expõe propriedades fortemente tipadas (`Ui`, `Auth` e `Api`).
-2. **Configuração via `.runsettings` e `ContextOptions`**:
-   - *TypeScript*: Centralizava configurações em `playwright.config.ts`.
-   - *C#*: Configurações de navegador ficam no arquivo `.runsettings` e opções de contexto são definidas no override de `ContextOptions()` da classe base.
-3. **Ausência do runner interativo `--ui`**:
-   - *TypeScript*: Possui a flag nativa `npx playwright test --ui`.
-   - *C#*: A visualização interativa é feita via Playwright Trace Viewer (`playwright.ps1 show-trace traces/<arquivo>.zip`) ou extensão do Visual Studio / VS Code.
-4. **Respeito às checagens de acionabilidade (`Force = false`)**:
-   - *TypeScript*: Forçava cliques cegos com `force: true` e esperas redundantes.
-   - *C#*: `Force` padrão é `false`, permitindo que o Playwright aguarde o elemento estar estável, visível e clicável.
-5. **Tipagem e Modelos Fortemente Tipados**:
-   - As opções literais anônimas de TS viraram records C# (`UiOptions`, `LoginOptions`, `SearchField`, `ReloadOptions`, `DownloadResult`).
+Gera e valida massas de dados dinâmicas sem dependências externas.
+
+```csharp
+using PlaywrightMasterToolkit.Utils;
+
+// CPF válido com ou sem máscara
+string cpfComMascara = DataGenerator.Cpf(mask: true);   // "123.456.789-09"
+bool valido = DataGenerator.IsValidCpf(cpfComMascara);  // true
+
+// CNPJ válido (filial matriz 0001)
+string cnpj = DataGenerator.Cnpj(mask: true);           // "12.345.678/0001-90"
+bool cnpjValido = DataGenerator.IsValidCnpj(cnpj);      // true
+
+// E-mail único e celular formatado
+string email = DataGenerator.Email("matheus", "empresa.com"); // "matheus.a8f9b2@empresa.com"
+string celular = DataGenerator.Cellphone(mask: true);          // "(11) 98765-4321"
+
+// Normalização de texto (remove acentos, caixa baixa e colapso de espaços)
+string limpo = DataGenerator.NormalizeText("  Ação   Éxito "); // "acao exito"
+```
+
+### 2. `UiHelper` (Resiliência de Interface)
+
+Acessível em qualquer teste que herde de `BaseTest` através da propriedade `Ui`.
+
+- **`WaitForPageLoadAsync(bool waitForNetworkIdle = false)`**: Aguarda `DOMContentLoaded` e `Load`.
+- **`InteractWithElementAsync(selector/locator, UiAction action, UiOptions? options = null)`**: Executa ações (`Click`, `Type`, `Clear`, `MouseOver`, `ContainsClick`, `ContainsSelectorClick`) com `Force = false` por padrão para respeitar verificações de acionabilidade.
+- **`ClickWhenVisibleAndEnabledAsync(selector/locator, UiOptions? options = null)`**: Aguarda que o elemento esteja visível e habilitado antes do clique.
+- **`SelectAutocompleteAsync(selector, value, bool type = false, UiOptions? options = null)`**: Digita sequencialmente com delay (`PressSequentiallyAsync`) e aguarda a visibilidade da opção (com fallback para MUI, AntDesign e tags `li`).
+- **`SelectOptionWithTextAsync(selector, text, timeout = 30000)`**: Abre dropdown, seleciona o texto correspondente e pressiona `Escape` para fechar menus suspensos.
+- **`ClickUntilVisibleAsync(clickSelector, targetSelector, timeout = 30000, intervalMs = 500)`**: Clica repetidamente até o alvo aparecer, tolerando re-renderizações e informando com precisão qual seletor faltou.
+- **`ValidateTextInElementAsync(selector/locator, texts, timeout = 30000)`**: Executa asserções nativas `ToContainTextAsync` para múltiplos textos.
+- **`SearchFormAsync(fields, submitButtonSelector = null)`**: Preenche formulários dinâmicos respeitando `OptionIndex`.
+- **`ReloadUntilVisibleAsync(selector, expectedText, ReloadOptions? options = null)`**: Recarrega a página em loop inspecionando todos os elementos correspondentes via `AllTextContentsAsync()` e texto normalizado.
+- **`ValidateDownloadDetailedAsync(trigger, saveTo = null)`**: Intercepta download nativo disparado pela ação, valida o arquivo físico e opcionalmente o salva na pasta `downloads/`.
+- **Métodos Auxiliares de Preenchimento**: `FillGeneratedNameAsync`, `FillGeneratedCpfAsync`, `FillGeneratedCnpjAsync`, `FillGeneratedEmailAsync` e `FillGeneratedPhoneAsync` (preenchem e retornam o valor gerado).
+
+### 3. `AuthHelper` (Autenticação e Sessão)
+
+Acessível através da propriedade `Auth`.
+
+- **`LoginPlatformAsync(email = null, password = null, LoginOptions? options = null)`**:
+  - Limpa cookies e `localStorage`/`sessionStorage` de sessões passadas.
+  - Navega para a rota de login preservando hash routing (`/#/login`).
+  - Preenche o e-mail e valida com `ToHaveValueAsync`.
+  - Aguarda o botão de envio estar habilitado antes do clique.
+  - Executa polling assíncrono com `Stopwatch`: se a URL desviar da rota de login, retorna sucesso; se surgir modal de sessão concorrente ativa, confirma derrubada e aguarda; se exibir mensagem de erro, falha imediatamente.
+- **`LogoutAsync(userMenuSelector = "#user-menu", logoutButtonSelector = "#btn-logout")`**: Abre o menu do usuário, aguarda o botão e limpa os estados do navegador.
+
+### 4. `ApiHelper` (Cliente HTTP e Data Seeding)
+
+Acessível através da propriedade lazy `Api` em `BaseTest` ou instanciado com `IAPIRequestContext`.
+
+- **`LoginViaApiAsync(user, pass, loginEndpoint = "/api/v1/auth/login")`**: Autentica via POST e extrai o token JWT.
+- **`SeedRecordViaApiAsync<T>(endpoint, payload, token = null)`**: Injeta dados via POST e desserializa o retorno em um DTO fortemente tipado usando `System.Text.Json` (com `PropertyNameCaseInsensitive = true`).
+
+### 5. `BaseTest` (Classe Base para Testes)
+
+Herdada por todas as suítes de teste:
+
+```csharp
+[Parallelizable(ParallelScope.Self)]
+public abstract class BaseTest : PageTest
+{
+    public UiHelper Ui { get; }
+    public AuthHelper Auth { get; }
+    public ApiHelper Api { get; } // Lazy: exige API_BASE_URL apenas quando acessado
+}
+```
+
+- **SetUp**: Configura timeouts padrão (20s ação, 30s navegação, 15s expect), viewport 1366x768, downloads habilitados e inicia gravação de tracing Playwright.
+- **TearDown**: Em caso de falha do teste, captura screenshot em `screenshots/` e arquivo `.zip` de trace em `traces/`, anexando ambos ao relatório do NUnit.
+
+### 6. `TestConfig` (Gerenciamento de Configurações)
+
+Lê variáveis de ambiente com carregamento automático da pasta `config/`:
+- `BaseUrl`: URL da aplicação (fallback: `https://demo.playwright.dev/todomvc`).
+- `ApiBaseUrl`: URL base da API REST.
+- `UserEmail` e `UserPassword`: Credenciais padrão.
+- `GetRequired("NOME")`: Lança exceção explícita caso uma variável indispensável não tenha sido configurada.
 
 ---
 
-## 🌟 Boas Práticas de Automação
+## 🧪 Exemplos de Testes E2E e Híbridos
 
-1. **Priorize Localizadores Semânticos**: Dê preferência a `GetByRole()`, `GetByLabel()` e `GetByTestId()` em vez de seletores CSS complexos baseados em estrutura volátil de classes.
-2. **Evite `Page.WaitForTimeoutAsync` e `NetworkIdle`**:
-   - `WaitForTimeout` introduz lentidão e flakiness desnecessários.
-   - `NetworkIdle` é desaconselhado pelo Playwright oficial pois conexões WebSocket ou polling constante impedem que o estado seja atingido.
-3. **API Seeding para Preparação de Estado**:
-   - Em vez de navegar por 5 telas de cadastro para criar uma entidade antes de testá-la, use `Api.SeedRecordViaApiAsync` para injetar o registro em milissegundos e abra a UI direto no cenário relevante.
-4. **Tratamento de Retry**:
-   - No NUnit, utilize o atributo `[Retry(2)]` em testes específicos que tenham dependências externas conhecidas, ou configure a repetição no CI.
-
----
-
-## 🔍 Diagnóstico e Visualização de Traces
-
-Sempre que um teste falhar, o `BaseTest` salva automaticamente um arquivo de trace `.zip` na pasta `traces/` da raiz do projeto.
-
-Para inspecionar passo a passo o teste com a linha do tempo, rede, ações e visualização DOM:
-```powershell
-pwsh tests/PlaywrightMasterToolkit.Tests/bin/Debug/net8.0/playwright.ps1 show-trace traces/NomeDoTeste.zip
-```
-
----
-
-## 📦 Como Utilizar em Outros Projetos
-
-### Opção 1: Referência Direta de Projeto
-Adicione a referência do projeto `PlaywrightMasterToolkit.csproj` ao seu projeto de testes existente:
-```bash
-dotnet add MeuProjeto.Tests.csproj reference ../PlaywrightMasterToolkit/src/PlaywrightMasterToolkit/PlaywrightMasterToolkit.csproj
-```
-
-### Opção 2: Empacotamento NuGet Local
-Gere o pacote `.nupkg`:
-```bash
-dotnet pack src/PlaywrightMasterToolkit/PlaywrightMasterToolkit.csproj -c Release -o ./nupkg
-```
-E instale no seu projeto:
-```bash
-dotnet add package PlaywrightMasterToolkit --source ./nupkg
-```
-
-Nas suas classes de teste, basta herdar de `BaseTest`:
+### Cenário 1: Autenticação Resiliente e Cadastro com Dados Dinâmicos
 ```csharp
 using NUnit.Framework;
 using PlaywrightMasterToolkit.Base;
 
 [TestFixture]
-public class ExemploTests : BaseTest
+public class CadastroClienteTests : BaseTest
 {
     [Test]
-    public async Task MeuCenario()
+    public async Task DeveCadastrarClienteComDadosUnicos()
     {
-        await Page.GotoAsync(TestConfig.BaseUrl);
-        await Ui.WaitForPageLoadAsync();
-        string nome = await Ui.FillGeneratedNameAsync(".new-todo", "Exemplo");
-        await Ui.ValidateTextInElementAsync(".todo-list", nome);
+        // 1. Login com tratamento de sessão concorrente ativa
+        await Auth.LoginPlatformAsync("usuario.qa@empresa.com", "SenhaForte@123");
+        await Page.GotoAsync("/clientes/novo");
+
+        // 2. Preenchimento de campos com massas não colidentes
+        string nome = await Ui.FillGeneratedNameAsync("#txt-nome", "Cliente");
+        string cnpj = await Ui.FillGeneratedCnpjAsync("#txt-cnpj", mask: true);
+        string email = await Ui.FillGeneratedEmailAsync("#txt-email");
+        string telefone = await Ui.FillGeneratedPhoneAsync("#txt-telefone", mask: true);
+
+        // 3. Dropdown com busca e digitação sequencial
+        await Ui.SelectAutocompleteAsync("#filtro-cidade", "São Paulo", type: true);
+
+        // 4. Clique seguro no botão salvar
+        await Ui.ClickWhenVisibleAndEnabledAsync("#btn-salvar");
+
+        // 5. Validação de mensagem de confirmação
+        await Assertions.Expect(Page.GetByText("Cadastrado com sucesso")).ToBeVisibleAsync();
+    }
+}
+```
+
+### Cenário 2: Teste Híbrido (API Seeding) + Interceptação de Download
+```csharp
+using NUnit.Framework;
+using PlaywrightMasterToolkit.Base;
+using PlaywrightMasterToolkit.Utils;
+
+public record PedidoDto(int Id, string Codigo, double Valor);
+
+[TestFixture]
+public class PedidoHibridoTests : BaseTest
+{
+    [Test]
+    public async Task DeveCriarPedidoViaApiEBaixarRelatorio()
+    {
+        // 1. Cria o pedido diretamente via API (em milissegundos!)
+        string token = await Api.LoginViaApiAsync("admin", "admin123");
+        var payload = new { codigo = $"PED_{DataGenerator.UniqueHash(6)}", valor = 2500.0 };
+        var pedido = await Api.SeedRecordViaApiAsync<PedidoDto>("/pedidos", payload, token);
+
+        // 2. Navega direto para a tela do pedido já existente
+        await Page.GotoAsync($"/pedidos/{pedido.Codigo}");
+        await Ui.ValidateTextInElementAsync(".card-resumo", [pedido.Codigo, "R$ 2.500,00"]);
+
+        // 3. Intercepta o download gerado pelo navegador e salva em downloads/
+        var download = await Ui.ValidateDownloadDetailedAsync(async () =>
+        {
+            await Page.Locator("#btn-exportar-pdf").ClickAsync();
+        }, saveTo: $"{pedido.Codigo}.pdf");
+
+        Assert.That(download.FileName, Does.EndWith(".pdf"));
+        Assert.That(File.Exists(download.Path), Is.True);
     }
 }
 ```
 
 ---
 
+## 🔀 Diferenças em Relação ao TypeScript
+
+1. **Fixtures**: No TypeScript usa-se `test.extend<CustomFixtures>({ ui, auth, api })`. Em C#, adota-se herança de `BaseTest` (que herda de `PageTest`).
+2. **Configurações Globais**: Em vez de `playwright.config.ts`, utiliza-se o arquivo `.runsettings` e a sobrecarga de `ContextOptions()` em `BaseTest`.
+3. **Checagens de Ação (`force: false`)**: O código TypeScript original forçava `force: true` em todos os cliques. No C#, o padrão é `false` para garantir que o Playwright verifique estabilidade e visibilidade reais.
+4. **Tipagem Estrita**: Parâmetros anônimos foram substituídos por records em `Models/` (`UiOptions`, `LoginOptions`, `SearchField`, etc.).
+
+---
+
+## 💡 Boas Práticas de Automação
+
+1. **Priorize Seletores de Usuário**: Prefira `GetByRole()`, `GetByLabel()` e `GetByTestId()` a seletores CSS frágeis como `.btn-primary.active > span`.
+2. **Evite `Page.WaitForTimeoutAsync` e `NetworkIdle`**: Não use pausas fixas. Deixe o Playwright aguardar os elementos. Evite `NetworkIdle` em páginas com WebSockets ou chamadas contínuas.
+3. **Reaproveitamento de Estado (StorageState)**: Para suítes grandes, salve o estado de autenticação em arquivo JSON e configure no `ContextOptions()` para evitar autenticação a cada teste.
+4. **Isolamento e Paralelismo**: Todos os testes herdam `[Parallelizable(ParallelScope.Self)]`, rodando de forma isolada com contexto e página próprios.
+
+---
+
+## 🔍 Diagnóstico com Traces e Screenshots
+
+Quando um teste falha:
+1. Uma captura de tela é salva em `screenshots/<NomeDoTeste>_<Timestamp>.png`.
+2. Um trace completo com linha do tempo, requisições de rede, DOM snapshots e console é gravado em `traces/<NomeDoTeste>.zip`.
+3. Ambos os arquivos são anexados automaticamente à execução do teste no NUnit.
+
+Para inspecionar o arquivo de trace graficamente:
+```powershell
+pwsh tests/PlaywrightMasterToolkit.Tests/bin/Debug/net8.0/playwright.ps1 show-trace traces/NomeDoTeste.zip
+```
+
+---
+
+## 🚀 Integração Contínua (CI/CD)
+
+O repositório já conta com pipeline configurado no GitHub Actions em [`.github/workflows/ci.yml`](file:///.github/workflows/ci.yml):
+
+- Configura .NET 8.x
+- Executa compilação em modo Release
+- Instala o Chromium com dependências do SO via `playwright.ps1 install --with-deps chromium`
+- Executa todos os testes automatizados
+- Faz upload automático dos artefatos `traces/` e `screenshots/` em caso de falha
+
+---
+
+## 📦 Como Reutilizar em Seu Projeto
+
+### Adicionar Referência de Projeto
+```bash
+dotnet add MeuProjetoDeTestes.csproj reference ../PlaywrightMasterToolkit/src/PlaywrightMasterToolkit/PlaywrightMasterToolkit.csproj
+```
+
+### Criar Pacote NuGet Local
+```bash
+dotnet pack src/PlaywrightMasterToolkit/PlaywrightMasterToolkit.csproj -c Release -o ./nupkg
+dotnet add package PlaywrightMasterToolkit --source ./nupkg
+```
+
+---
+
 ## 📄 Licença
+
 Distribuído sob a licença [MIT](LICENSE). Copyright © 2026 Matheus Neves.
