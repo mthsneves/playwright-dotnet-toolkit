@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Authors>Matheus Neves</Authors>
+    <Description>Toolkit reutilizável de automação de testes com Playwright para .NET (C#) e NUnit, incluindo helpers de UI, resiliência, gerador de dados e helper de API.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/matheusneves/playwright-dotnet-master-toolkit</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>playwright;dotnet;csharp;nunit;testing;automation;e2e</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DotNetEnv" Version="3.2.0" />
+    <PackageReference Include="Microsoft.Playwright.NUnit" Version="1.63.0" />
+  </ItemGroup>
+
+</Project>
